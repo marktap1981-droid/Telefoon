@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Voorraadbeheer</string>
+    <string name="widget_low_stock_label">Lage voorraad</string>
+
+    <!-- Inloggen -->
+    <string name="login_title">Voorraadbeheer</string>
+    <string name="login_subtitle">Beheer je voorraad in kast, koelkast en camping</string>
+    <string name="login_with_google">Inloggen met Google</string>
+    <string name="login_failed">Inloggen mislukt. Probeer het opnieuw.</string>
+
+    <!-- Dashboard -->
+    <string name="dashboard_title">Overzicht</string>
+    <string name="dashboard_total_products">Producten</string>
+    <string name="dashboard_low_stock">Lage voorraad</string>
+    <string name="dashboard_expiring_soon">Bijna verlopen</string>
+    <string name="dashboard_locations">Locaties</string>
+    <string name="dashboard_no_locations">Nog geen locaties. Voeg er een toe in Locaties.</string>
+
+    <!-- Navigatie -->
+    <string name="nav_dashboard">Overzicht</string>
+    <string name="nav_inventory">Voorraad</string>
+    <string name="nav_scan">Scannen</string>
+    <string name="nav_shopping_list">Boodschappen</string>
+    <string name="nav_locations">Locaties</string>
+    <string name="nav_settings">Instellingen</string>
+
+    <!-- Voorraad -->
+    <string name="inventory_title">Voorraad</string>
+    <string name="inventory_all_locations">Alle locaties</string>
+    <string name="inventory_empty">Nog geen producten in deze locatie.</string>
+    <string name="inventory_add_manually">Handmatig toevoegen</string>
+    <string name="inventory_search_hint">Zoek product…</string>
+    <string name="inventory_expiry">THT: %1$s</string>
+    <string name="inventory_delete">Verwijderen</string>
+
+    <!-- Locaties -->
+    <string name="locations_title">Locaties</string>
+    <string name="locations_add">Locatie toevoegen</string>
+    <string name="locations_name_hint">Naam (bv. Kast, Koelkast, Camping)</string>
+    <string name="locations_empty">Nog geen locaties toegevoegd.</string>
+    <string name="locations_delete_confirm">Locatie en bijbehorende voorraad verwijderen?</string>
+
+    <!-- Scannen -->
+    <string name="scan_title">Barcode scannen</string>
+    <string name="scan_permission_required">Camera-toegang is nodig om te scannen.</string>
+    <string name="scan_grant_permission">Toegang verlenen</string>
+    <string name="scan_looking_up">Product opzoeken…</string>
+    <string name="scan_not_found">Product niet gevonden. Vul de gegevens handmatig in.</string>
+
+    <!-- Product toevoegen/bewerken -->
+    <string name="product_add_title">Product toevoegen</string>
+    <string name="product_name_hint">Productnaam</string>
+    <string name="product_brand_hint">Merk</string>
+    <string name="product_category_hint">Categorie</string>
+    <string name="product_location_label">Locatie</string>
+    <string name="product_quantity_label">Aantal</string>
+    <string name="product_min_quantity_label">Minimum voorraad (voor melding)</string>
+    <string name="product_expiry_label">Houdbaar tot (optioneel)</string>
+    <string name="product_save">Opslaan</string>
+    <string name="product_pick_expiry">Datum kiezen</string>
+    <string name="product_no_expiry">Geen houdbaarheidsdatum</string>
+
+    <!-- Boodschappenlijst -->
+    <string name="shopping_list_title">Boodschappenlijst</string>
+    <string name="shopping_list_auto_section">Lage voorraad</string>
+    <string name="shopping_list_manual_section">Zelf toegevoegd</string>
+    <string name="shopping_list_add_hint">Item toevoegen…</string>
+    <string name="shopping_list_empty">Je boodschappenlijst is leeg.</string>
+
+    <!-- Instellingen -->
+    <string name="settings_title">Instellingen</string>
+    <string name="settings_expiry_reminder_days">Herinner mij dagen voor houdbaarheidsdatum</string>
+    <string name="settings_notifications_enabled">Meldingen aan</string>
+    <string name="settings_sign_out">Uitloggen</string>
+    <string name="settings_account">Ingelogd als %1$s</string>
+
+    <!-- Algemeen -->
+    <string name="action_cancel">Annuleren</string>
+    <string name="action_delete">Verwijderen</string>
+    <string name="action_save">Opslaan</string>
+    <string name="action_add">Toevoegen</string>
+</resources>

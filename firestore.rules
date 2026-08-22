@@ -1,0 +1,19 @@
+rules_version = '2';
+
+// Firestore-beveiligingsregels voor Voorraadbeheer.
+// Plak deze in Firebase Console -> Firestore Database -> Rules.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Elke gebruiker kan alleen zijn eigen data lezen/schrijven.
+    match /users/{userId}/{document=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+
+    // Gedeelde productcache (barcode -> naam/merk/foto): door alle ingelogde
+    // gebruikers leesbaar en schrijfbaar (nodig omdat elke scan de cache mag vullen).
+    match /products/{barcode} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
