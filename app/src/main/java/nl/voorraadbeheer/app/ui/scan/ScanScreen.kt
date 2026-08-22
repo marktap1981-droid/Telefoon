@@ -8,8 +8,8 @@ import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.lifecycle.awaitInstance
 import androidx.camera.view.PreviewView
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -19,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -32,7 +33,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getMainExecutor
 import nl.voorraadbeheer.app.R
 import java.util.concurrent.Executors
 
@@ -82,44 +82,40 @@ private fun CameraPreviewWithScanner(
     val lifecycleOwner = LocalLifecycleOwner.current
     val currentOnBarcodeScanned by rememberUpdatedState(onBarcodeScanned)
     var handled by remember { mutableStateOf(false) }
+    val previewView = remember { PreviewView(context) }
     val analysisExecutor = remember { Executors.newSingleThreadExecutor() }
 
-    Box(modifier = modifier) {
-        AndroidView(
-            factory = { ctx ->
-                val previewView = PreviewView(ctx)
-                val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
-                cameraProviderFuture.addListener({
-                    val cameraProvider = cameraProviderFuture.get()
-                    val preview = Preview.Builder().build().also {
-                        it.setSurfaceProvider(previewView.surfaceProvider)
+    LaunchedEffect(Unit) {
+        val cameraProvider = ProcessCameraProvider.awaitInstance(context)
+        val preview = Preview.Builder().build().also {
+            it.setSurfaceProvider(previewView.surfaceProvider)
+        }
+        val analysis = ImageAnalysis.Builder()
+            .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+            .build()
+            .also {
+                it.setAnalyzer(analysisExecutor, BarcodeAnalyzer { barcode ->
+                    if (!handled) {
+                        handled = true
+                        currentOnBarcodeScanned(barcode)
                     }
-                    val analysis = ImageAnalysis.Builder()
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                        .build()
-                        .also {
-                            it.setAnalyzer(analysisExecutor, BarcodeAnalyzer { barcode ->
-                                if (!handled) {
-                                    handled = true
-                                    currentOnBarcodeScanned(barcode)
-                                }
-                            })
-                        }
-                    runCatching {
-                        cameraProvider.unbindAll()
-                        cameraProvider.bindToLifecycle(
-                            lifecycleOwner,
-                            CameraSelector.DEFAULT_BACK_CAMERA,
-                            preview,
-                            analysis,
-                        )
-                    }
-                }, getMainExecutor(ctx))
-                previewView
-            },
-            modifier = Modifier.fillMaxSize(),
-        )
+                })
+            }
+        runCatching {
+            cameraProvider.unbindAll()
+            cameraProvider.bindToLifecycle(
+                lifecycleOwner,
+                CameraSelector.DEFAULT_BACK_CAMERA,
+                preview,
+                analysis,
+            )
+        }
     }
+
+    AndroidView(
+        factory = { previewView },
+        modifier = modifier,
+    )
 
     DisposableEffect(Unit) {
         onDispose { analysisExecutor.shutdown() }
