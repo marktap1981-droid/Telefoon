@@ -27,9 +27,16 @@ object NetworkModule {
     @Singleton
     fun provideOkHttpClient(): OkHttpClient {
         val logging = HttpLoggingInterceptor().apply {
-            level = HttpLoggingInterceptor.Level.BASIC
+            level = HttpLoggingInterceptor.Level.BODY
+        }
+        val userAgent = okhttp3.Interceptor { chain ->
+            val request = chain.request().newBuilder()
+                .header("User-Agent", "Voorraadbeheer-Android/1.0")
+                .build()
+            chain.proceed(request)
         }
         return OkHttpClient.Builder()
+            .addInterceptor(userAgent)
             .addInterceptor(logging)
             .build()
     }
