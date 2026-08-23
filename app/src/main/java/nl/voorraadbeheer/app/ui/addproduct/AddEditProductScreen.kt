@@ -139,15 +139,17 @@ fun AddEditProductScreen(
             }
 
             OutlinedTextField(
-                value = uiState.quantity.toString(),
-                onValueChange = { it.toIntOrNull()?.let(viewModel::updateQuantity) },
+                value = uiState.quantity,
+                onValueChange = viewModel::updateQuantity,
                 label = { Text(stringResource(R.string.product_quantity_label)) },
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
             )
             OutlinedTextField(
-                value = uiState.minQuantity.toString(),
-                onValueChange = { it.toIntOrNull()?.let(viewModel::updateMinQuantity) },
+                value = uiState.minQuantity,
+                onValueChange = viewModel::updateMinQuantity,
                 label = { Text(stringResource(R.string.product_min_quantity_label)) },
+                keyboardOptions = androidx.compose.foundation.text.KeyboardOptions(keyboardType = androidx.compose.ui.text.input.KeyboardType.Number),
                 modifier = Modifier.fillMaxWidth(),
             )
 

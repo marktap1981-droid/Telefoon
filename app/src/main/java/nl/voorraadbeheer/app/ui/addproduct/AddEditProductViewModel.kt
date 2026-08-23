@@ -26,8 +26,8 @@ data class AddEditProductUiState(
     val imageUrl: String = "",
     val category: String = "",
     val locationId: String = "",
-    val quantity: Int = 1,
-    val minQuantity: Int = 0,
+    val quantity: String = "1",
+    val minQuantity: String = "0",
     val expiryDateMillis: Long? = null,
     val locations: List<Location> = emptyList(),
     val isEditing: Boolean = false,
@@ -123,8 +123,8 @@ class AddEditProductViewModel @Inject constructor(
                 imageUrl = item.imageUrl,
                 category = item.category,
                 locationId = item.locationId,
-                quantity = suggestedQuantity,
-                minQuantity = item.minQuantity,
+                quantity = suggestedQuantity.toString(),
+                minQuantity = item.minQuantity.toString(),
                 expiryDateMillis = item.expiryDate?.toDate()?.time,
             )
         }
@@ -134,8 +134,17 @@ class AddEditProductViewModel @Inject constructor(
     fun updateBrand(value: String) { _uiState.value = _uiState.value.copy(brand = value) }
     fun updateCategory(value: String) { _uiState.value = _uiState.value.copy(category = value) }
     fun updateLocation(locationId: String) { _uiState.value = _uiState.value.copy(locationId = locationId) }
-    fun updateQuantity(value: Int) { _uiState.value = _uiState.value.copy(quantity = value.coerceAtLeast(0)) }
-    fun updateMinQuantity(value: Int) { _uiState.value = _uiState.value.copy(minQuantity = value.coerceAtLeast(0)) }
+    fun updateQuantity(value: String) {
+        if (value.isEmpty() || value.all { it.isDigit() }) {
+            _uiState.value = _uiState.value.copy(quantity = value)
+        }
+    }
+
+    fun updateMinQuantity(value: String) {
+        if (value.isEmpty() || value.all { it.isDigit() }) {
+            _uiState.value = _uiState.value.copy(minQuantity = value)
+        }
+    }
     fun updateExpiryMillis(value: Long?) { _uiState.value = _uiState.value.copy(expiryDateMillis = value) }
 
     fun save() {
@@ -143,6 +152,8 @@ class AddEditProductViewModel @Inject constructor(
         if (state.name.isBlank() || state.locationId.isBlank()) return
         viewModelScope.launch {
             val expiry = state.expiryDateMillis?.let { Timestamp(java.util.Date(it)) }
+            val quantity = state.quantity.toIntOrNull() ?: 0
+            val minQuantity = state.minQuantity.toIntOrNull() ?: 0
             val existingId = editingItemId
             if (existingId != null) {
                 inventoryRepository.updateItem(
@@ -154,8 +165,8 @@ class AddEditProductViewModel @Inject constructor(
                         imageUrl = state.imageUrl,
                         category = state.category.trim(),
                         locationId = state.locationId,
-                        quantity = state.quantity,
-                        minQuantity = state.minQuantity,
+                        quantity = quantity,
+                        minQuantity = minQuantity,
                         expiryDate = expiry,
                         addedAt = editingAddedAt,
                     ),
@@ -169,8 +180,8 @@ class AddEditProductViewModel @Inject constructor(
                         imageUrl = state.imageUrl,
                         category = state.category.trim(),
                         locationId = state.locationId,
-                        quantity = state.quantity,
-                        minQuantity = state.minQuantity,
+                        quantity = quantity,
+                        minQuantity = minQuantity,
                         expiryDate = expiry,
                     ),
                 )
