@@ -39,9 +39,10 @@ import nl.voorraadbeheer.app.data.model.Location
 fun LocationsScreen(
     viewModel: LocationsViewModel = hiltViewModel(),
 ) {
-    val locations by viewModel.locations.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
     var showAddDialog by remember { mutableStateOf(false) }
     var pendingDelete by remember { mutableStateOf<Location?>(null) }
+    var blockedDeleteCount by remember { mutableStateOf<Int?>(null) }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.locations_title)) }) },
@@ -51,7 +52,7 @@ fun LocationsScreen(
             }
         },
     ) { padding ->
-        if (locations.isEmpty()) {
+        if (uiState.locations.isEmpty()) {
             Column(modifier = Modifier.fillMaxSize().padding(padding).padding(16.dp)) {
                 Text(stringResource(R.string.locations_empty))
             }
@@ -61,14 +62,24 @@ fun LocationsScreen(
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(16.dp),
                 verticalArrangement = Arrangement.spacedBy(8.dp),
             ) {
-                items(locations, key = { it.id }) { location ->
+                items(uiState.locations, key = { it.id }) { location ->
+                    val itemCount = uiState.itemCounts[location.id] ?: 0
                     Card(modifier = Modifier.fillMaxWidth()) {
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
                         ) {
-                            Text(location.name, style = MaterialTheme.typography.bodyLarge)
-                            IconButton(onClick = { pendingDelete = location }) {
+                            Column {
+                                Text(location.name, style = MaterialTheme.typography.bodyLarge)
+                                Text("$itemCount", style = MaterialTheme.typography.labelLarge)
+                            }
+                            IconButton(onClick = {
+                                if (itemCount > 0) {
+                                    blockedDeleteCount = itemCount
+                                } else {
+                                    pendingDelete = location
+                                }
+                            }) {
                                 Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.action_delete))
                             }
                         }
@@ -116,6 +127,17 @@ fun LocationsScreen(
             },
             dismissButton = {
                 TextButton(onClick = { pendingDelete = null }) { Text(stringResource(R.string.action_cancel)) }
+            },
+        )
+    }
+
+    blockedDeleteCount?.let { count ->
+        AlertDialog(
+            onDismissRequest = { blockedDeleteCount = null },
+            title = { Text(stringResource(R.string.action_delete)) },
+            text = { Text(stringResource(R.string.locations_delete_blocked, count)) },
+            confirmButton = {
+                TextButton(onClick = { blockedDeleteCount = null }) { Text(stringResource(R.string.action_cancel)) }
             },
         )
     }

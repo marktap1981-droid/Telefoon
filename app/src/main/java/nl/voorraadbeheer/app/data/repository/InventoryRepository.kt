@@ -65,11 +65,4 @@ class InventoryRepository @Inject constructor(
     suspend fun deleteItem(itemId: String) {
         itemsCollection().document(itemId).delete().await()
     }
-
-    suspend fun deleteItemsForLocation(locationId: String) {
-        val batch = firestore.batch()
-        val items = itemsCollection().whereEqualTo("locationId", locationId).get().await()
-        items.documents.forEach { batch.delete(it.reference) }
-        batch.commit().await()
-    }
 }

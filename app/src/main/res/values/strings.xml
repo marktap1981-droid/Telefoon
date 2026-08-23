@@ -39,7 +39,8 @@
     <string name="locations_add">Locatie toevoegen</string>
     <string name="locations_name_hint">Naam (bv. Kast, Koelkast, Camping)</string>
     <string name="locations_empty">Nog geen locaties toegevoegd.</string>
-    <string name="locations_delete_confirm">Locatie en bijbehorende voorraad verwijderen?</string>
+    <string name="locations_delete_confirm">Locatie verwijderen?</string>
+    <string name="locations_delete_blocked">Deze locatie bevat nog %1$d product(en) en kan niet verwijderd worden. Verplaats of verwijder eerst de producten.</string>
 
     <!-- Scannen -->
     <string name="scan_title">Barcode scannen</string>
