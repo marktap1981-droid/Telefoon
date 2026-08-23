@@ -21,6 +21,15 @@ object Routes {
 
     const val ADD_PRODUCT = "add_product"
     const val ADD_PRODUCT_ARG_BARCODE = "barcode"
-    const val ADD_PRODUCT_ROUTE = "$ADD_PRODUCT?$ADD_PRODUCT_ARG_BARCODE={$ADD_PRODUCT_ARG_BARCODE}"
-    fun addProduct(barcode: String? = null) = "$ADD_PRODUCT?$ADD_PRODUCT_ARG_BARCODE=${barcode.orEmpty()}"
+    const val ADD_PRODUCT_ARG_ITEM_ID = "itemId"
+    const val ADD_PRODUCT_ROUTE =
+        "$ADD_PRODUCT?$ADD_PRODUCT_ARG_BARCODE={$ADD_PRODUCT_ARG_BARCODE}&$ADD_PRODUCT_ARG_ITEM_ID={$ADD_PRODUCT_ARG_ITEM_ID}"
+
+    /** Nieuw product toevoegen (evt. met barcode uit de scanner, voor de productopzoek-stap). */
+    fun addProduct(barcode: String? = null) =
+        "$ADD_PRODUCT?$ADD_PRODUCT_ARG_BARCODE=${barcode.orEmpty()}&$ADD_PRODUCT_ARG_ITEM_ID="
+
+    /** Bestaand voorraaditem bewerken. */
+    fun editProduct(itemId: String) =
+        "$ADD_PRODUCT?$ADD_PRODUCT_ARG_BARCODE=&$ADD_PRODUCT_ARG_ITEM_ID=$itemId"
 }

@@ -40,6 +40,12 @@ class InventoryRepository @Inject constructor(
         awaitClose { registration.remove() }
     }
 
+    /** Zoekt een bestaand voorraaditem met deze barcode (ongeacht locatie), voor scan-van-bestaand-product. */
+    suspend fun findByBarcode(barcode: String): InventoryItem? {
+        val snapshot = itemsCollection().whereEqualTo("barcode", barcode).limit(1).get().await()
+        return snapshot.documents.firstOrNull()?.toObject(InventoryItem::class.java)
+    }
+
     suspend fun addItem(item: InventoryItem) {
         val withTimestamp = item.copy(addedAt = Timestamp.now())
         itemsCollection().add(withTimestamp).await()

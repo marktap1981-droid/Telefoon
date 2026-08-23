@@ -11,6 +11,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Remove
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.CircularProgressIndicator
@@ -42,6 +43,7 @@ import nl.voorraadbeheer.app.util.toDisplayString
 @Composable
 fun ItemDetailScreen(
     onBack: () -> Unit,
+    onEditClick: (String) -> Unit,
     viewModel: ItemDetailViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -63,6 +65,11 @@ fun ItemDetailScreen(
                     }
                 },
                 actions = {
+                    item?.let {
+                        IconButton(onClick = { onEditClick(it.id) }) {
+                            Icon(Icons.Filled.Edit, contentDescription = stringResource(R.string.action_edit))
+                        }
+                    }
                     IconButton(onClick = { showDeleteConfirm = true }) {
                         Icon(Icons.Filled.Delete, contentDescription = stringResource(R.string.action_delete))
                     }

@@ -116,7 +116,10 @@ private fun MainScaffold() {
                 route = Routes.ITEM_DETAIL_ROUTE,
                 arguments = listOf(navArgument(Routes.ITEM_DETAIL_ARG_ID) {}),
             ) {
-                ItemDetailScreen(onBack = { navController.popBackStack() })
+                ItemDetailScreen(
+                    onBack = { navController.popBackStack() },
+                    onEditClick = { itemId -> navController.navigate(Routes.editProduct(itemId)) },
+                )
             }
             composable(Routes.SHOPPING_LIST) { ShoppingListScreen() }
             composable(Routes.LOCATIONS) { LocationsScreen() }
@@ -130,9 +133,10 @@ private fun MainScaffold() {
             }
             composable(
                 route = Routes.ADD_PRODUCT_ROUTE,
-                arguments = listOf(navArgument(Routes.ADD_PRODUCT_ARG_BARCODE) {
-                    defaultValue = ""
-                }),
+                arguments = listOf(
+                    navArgument(Routes.ADD_PRODUCT_ARG_BARCODE) { defaultValue = "" },
+                    navArgument(Routes.ADD_PRODUCT_ARG_ITEM_ID) { defaultValue = "" },
+                ),
             ) {
                 AddEditProductScreen(onSaved = { navController.popBackStack() })
             }

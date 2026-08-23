@@ -55,8 +55,14 @@ fun AddEditProductScreen(
     var locationMenuExpanded by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
 
+    val titleRes = if (uiState.isEditing && !uiState.isRestockingExisting) {
+        R.string.product_edit_title
+    } else {
+        R.string.product_add_title
+    }
+
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.product_add_title)) }) },
+        topBar = { TopAppBar(title = { Text(stringResource(titleRes)) }) },
     ) { padding ->
         Column(
             modifier = Modifier
@@ -73,6 +79,8 @@ fun AddEditProductScreen(
                 }
             } else if (uiState.lookupFailed) {
                 Text(stringResource(R.string.scan_not_found), color = MaterialTheme.colorScheme.error)
+            } else if (uiState.isRestockingExisting) {
+                Text(stringResource(R.string.product_restocking_hint), color = MaterialTheme.colorScheme.primary)
             }
 
             if (uiState.imageUrl.isNotBlank()) {

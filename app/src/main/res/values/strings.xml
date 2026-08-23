@@ -51,6 +51,8 @@
 
     <!-- Product toevoegen/bewerken -->
     <string name="product_add_title">Product toevoegen</string>
+    <string name="product_edit_title">Product bewerken</string>
+    <string name="product_restocking_hint">Dit product staat al in de voorraad — aantal is alvast verhoogd.</string>
     <string name="product_name_hint">Productnaam</string>
     <string name="product_brand_hint">Merk</string>
     <string name="product_category_hint">Categorie</string>
@@ -79,6 +81,7 @@
     <!-- Algemeen -->
     <string name="action_cancel">Annuleren</string>
     <string name="action_delete">Verwijderen</string>
+    <string name="action_edit">Bewerken</string>
     <string name="action_save">Opslaan</string>
     <string name="action_add">Toevoegen</string>
 </resources>
