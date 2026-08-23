@@ -1,5 +1,6 @@
 package nl.voorraadbeheer.app.ui.addproduct
 
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import nl.voorraadbeheer.app.data.model.InventoryItem
 import nl.voorraadbeheer.app.data.model.Location
+import nl.voorraadbeheer.app.data.repository.ImageRepository
 import nl.voorraadbeheer.app.data.repository.InventoryRepository
 import nl.voorraadbeheer.app.data.repository.LocationRepository
 import nl.voorraadbeheer.app.data.repository.ProductLookupRepository
@@ -24,6 +26,8 @@ data class AddEditProductUiState(
     val name: String = "",
     val brand: String = "",
     val imageUrl: String = "",
+    val localImageUri: Uri? = null,
+    val isUploadingImage: Boolean = false,
     val category: String = "",
     val locationId: String = "",
     val quantity: String = "1",
@@ -35,6 +39,10 @@ data class AddEditProductUiState(
     val lookupFailed: Boolean = false,
     val isSaved: Boolean = false,
 ) {
+    /** Wat er op dit moment als preview getoond moet worden: net gekozen foto, anders de opgeslagen URL. */
+    val displayImage: Any?
+        get() = localImageUri ?: imageUrl.takeIf { it.isNotBlank() }
+
     /** True als deze scan een product herkende dat al in de voorraad staat (aantal is alvast +1 voorgesteld). */
     val isRestockingExisting: Boolean
         get() = isEditing && barcode != null
@@ -44,6 +52,7 @@ data class AddEditProductUiState(
 class AddEditProductViewModel @Inject constructor(
     private val inventoryRepository: InventoryRepository,
     private val productLookupRepository: ProductLookupRepository,
+    private val imageRepository: ImageRepository,
     locationRepository: LocationRepository,
     savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
@@ -146,6 +155,20 @@ class AddEditProductViewModel @Inject constructor(
         }
     }
     fun updateExpiryMillis(value: Long?) { _uiState.value = _uiState.value.copy(expiryDateMillis = value) }
+
+    fun onImagePicked(uri: Uri) {
+        _uiState.update { it.copy(localImageUri = uri, isUploadingImage = true) }
+        viewModelScope.launch {
+            val uploadedUrl = runCatching { imageRepository.uploadProductImage(uri) }.getOrNull()
+            _uiState.update {
+                if (uploadedUrl != null) {
+                    it.copy(imageUrl = uploadedUrl, localImageUri = null, isUploadingImage = false)
+                } else {
+                    it.copy(isUploadingImage = false)
+                }
+            }
+        }
+    }
 
     fun save() {
         val state = _uiState.value

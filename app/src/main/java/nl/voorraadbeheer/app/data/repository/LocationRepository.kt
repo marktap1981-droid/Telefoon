@@ -1,6 +1,5 @@
 package nl.voorraadbeheer.app.data.repository
 
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -14,13 +13,10 @@ import javax.inject.Singleton
 @Singleton
 class LocationRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val auth: FirebaseAuth,
+    private val householdRepository: HouseholdRepository,
 ) {
-    private fun locationsCollection() =
-        firestore.collection("users").document(requireUid()).collection("locations")
-
-    private fun requireUid(): String =
-        auth.currentUser?.uid ?: error("Gebruiker is niet ingelogd")
+    private suspend fun locationsCollection() =
+        firestore.collection("households").document(householdRepository.getHouseholdId()).collection("locations")
 
     fun observeLocations(): Flow<List<Location>> = callbackFlow {
         val registration = locationsCollection()
@@ -35,6 +31,10 @@ class LocationRepository @Inject constructor(
     suspend fun addLocation(name: String, colorHex: String = "#2E7D32") {
         val location = Location(name = name, colorHex = colorHex)
         locationsCollection().add(location).await()
+    }
+
+    suspend fun renameLocation(locationId: String, newName: String) {
+        locationsCollection().document(locationId).update("name", newName).await()
     }
 
     suspend fun deleteLocation(locationId: String) {

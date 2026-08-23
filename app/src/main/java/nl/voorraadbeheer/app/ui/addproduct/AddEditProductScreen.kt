@@ -1,6 +1,11 @@
 package nl.voorraadbeheer.app.ui.addproduct
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Button
@@ -32,7 +38,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -54,6 +63,10 @@ fun AddEditProductScreen(
 
     var locationMenuExpanded by remember { mutableStateOf(false) }
     var showDatePicker by remember { mutableStateOf(false) }
+
+    val photoPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+    ) { uri -> uri?.let(viewModel::onImagePicked) }
 
     val titleRes = if (uiState.isEditing && !uiState.isRestockingExisting) {
         R.string.product_edit_title
@@ -83,12 +96,54 @@ fun AddEditProductScreen(
                 Text(stringResource(R.string.product_restocking_hint), color = MaterialTheme.colorScheme.primary)
             }
 
-            if (uiState.imageUrl.isNotBlank()) {
-                AsyncImage(
-                    model = uiState.imageUrl,
-                    contentDescription = null,
-                    modifier = Modifier.size(96.dp),
-                )
+            Box(
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .clickable {
+                        photoPickerLauncher.launch(
+                            androidx.activity.result.PickVisualMediaRequest(
+                                ActivityResultContracts.PickVisualMedia.ImageOnly,
+                            ),
+                        )
+                    },
+                contentAlignment = Alignment.Center,
+            ) {
+                if (uiState.displayImage != null) {
+                    AsyncImage(
+                        model = uiState.displayImage,
+                        contentDescription = null,
+                        contentScale = ContentScale.Crop,
+                        modifier = Modifier.fillMaxSize(),
+                    )
+                } else {
+                    Text(
+                        stringResource(R.string.product_add_photo),
+                        textAlign = androidx.compose.ui.text.style.TextAlign.Center,
+                        modifier = Modifier.padding(8.dp),
+                        style = MaterialTheme.typography.labelLarge,
+                    )
+                }
+                if (uiState.isUploadingImage) {
+                    Box(
+                        modifier = Modifier.fillMaxSize().background(MaterialTheme.colorScheme.scrim.copy(alpha = 0.4f)),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        CircularProgressIndicator(color = MaterialTheme.colorScheme.onPrimary)
+                    }
+                }
+            }
+            if (uiState.displayImage != null) {
+                TextButton(onClick = {
+                    photoPickerLauncher.launch(
+                        androidx.activity.result.PickVisualMediaRequest(
+                            ActivityResultContracts.PickVisualMedia.ImageOnly,
+                        ),
+                    )
+                }) {
+                    Text(stringResource(R.string.product_change_photo))
+                }
             }
 
             OutlinedTextField(
@@ -176,7 +231,7 @@ fun AddEditProductScreen(
             Button(
                 onClick = viewModel::save,
                 modifier = Modifier.fillMaxWidth(),
-                enabled = uiState.name.isNotBlank() && uiState.locationId.isNotBlank(),
+                enabled = uiState.name.isNotBlank() && uiState.locationId.isNotBlank() && !uiState.isUploadingImage,
             ) {
                 Text(stringResource(R.string.product_save))
             }

@@ -2,12 +2,36 @@ rules_version = '2';
 
 // Firestore-beveiligingsregels voor Voorraadbeheer.
 // Plak deze in Firebase Console -> Firestore Database -> Rules.
+//
+// Datamodel: elke gebruiker (users/{uid}) hoort bij precies één "huishouden"
+// (households/{householdId}). Alle voorraaddata (locaties, items, boodschappenlijst)
+// leeft onder dat huishouden, zodat leden van hetzelfde huishouden (bv. partners)
+// dezelfde gegevens zien. Voor deze privé/gezins-app is de deelcode-koppeling
+// bewust eenvoudig gehouden; bij publieke verspreiding verdient dit een striktere
+// aanpak (zie het gesprek met Claude over Play Store-risico's).
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Elke gebruiker kan alleen zijn eigen data lezen/schrijven.
-    match /users/{userId}/{document=**} {
-      allow read, write: if request.auth != null && request.auth.uid == userId;
+    // Koppeling gebruiker -> huishouden: alleen door jezelf te lezen/schrijven.
+    match /users/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    match /households/{householdId} {
+      // Leesbaar voor elke ingelogde gebruiker (nodig om een huishouden te vinden
+      // op basis van een deelcode, vóórdat je lid bent).
+      allow read: if request.auth != null;
+      // Aanmaken van een nieuw huishouden (bij eerste login).
+      allow create: if request.auth != null;
+      // Bijwerken (bv. jezelf toevoegen aan memberUids) mag alleen als je jezelf
+      // in de nieuwe ledenlijst opneemt.
+      allow update: if request.auth != null && request.auth.uid in request.resource.data.memberUids;
+
+      // Alle voorraaddata binnen het huishouden: alleen leden mogen lezen/schrijven.
+      match /{document=**} {
+        allow read, write: if request.auth != null &&
+          request.auth.uid in get(/databases/$(database)/documents/households/$(householdId)).data.memberUids;
+      }
     }
 
     // Gedeelde productcache (barcode -> naam/merk/foto): door alle ingelogde

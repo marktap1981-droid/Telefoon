@@ -1,28 +1,32 @@
 package nl.voorraadbeheer.app.data.repository
 
+import android.content.Context
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import nl.voorraadbeheer.app.data.model.InventoryItem
+import nl.voorraadbeheer.app.widget.LowStockWidget
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class InventoryRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val auth: FirebaseAuth,
+    private val householdRepository: HouseholdRepository,
+    @ApplicationContext private val context: Context,
 ) {
-    private fun itemsCollection() =
-        firestore.collection("users").document(requireUid()).collection("inventoryItems")
+    private suspend fun itemsCollection() =
+        firestore.collection("households").document(householdRepository.getHouseholdId()).collection("inventoryItems")
 
-    private fun requireUid(): String =
-        auth.currentUser?.uid ?: error("Gebruiker is niet ingelogd")
+    private suspend fun refreshWidget() {
+        runCatching { LowStockWidget.updateAll(context) }
+    }
 
-    /** Live-lijst van alle voorraaditems van de gebruiker, over alle locaties heen. */
+    /** Live-lijst van alle voorraaditems van het huishouden, over alle locaties heen. */
     fun observeAllItems(): Flow<List<InventoryItem>> = callbackFlow {
         val registration = itemsCollection()
             .addSnapshotListener { snapshot, _ ->
@@ -49,26 +53,31 @@ class InventoryRepository @Inject constructor(
     suspend fun addItem(item: InventoryItem) {
         val withTimestamp = item.copy(addedAt = Timestamp.now())
         itemsCollection().add(withTimestamp).await()
+        refreshWidget()
     }
 
     suspend fun updateItem(item: InventoryItem) {
         require(item.id.isNotBlank()) { "Item heeft geen id" }
         itemsCollection().document(item.id).set(item).await()
+        refreshWidget()
     }
 
     suspend fun updateQuantity(itemId: String, newQuantity: Int) {
         itemsCollection().document(itemId)
             .update("quantity", newQuantity.coerceAtLeast(0))
             .await()
+        refreshWidget()
     }
 
     suspend fun updateMinQuantity(itemId: String, newMinQuantity: Int) {
         itemsCollection().document(itemId)
             .update("minQuantity", newMinQuantity.coerceAtLeast(0))
             .await()
+        refreshWidget()
     }
 
     suspend fun deleteItem(itemId: String) {
         itemsCollection().document(itemId).delete().await()
+        refreshWidget()
     }
 }

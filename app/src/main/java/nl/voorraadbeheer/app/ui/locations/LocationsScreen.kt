@@ -43,6 +43,7 @@ fun LocationsScreen(
     var showAddDialog by remember { mutableStateOf(false) }
     var pendingDelete by remember { mutableStateOf<Location?>(null) }
     var blockedDeleteCount by remember { mutableStateOf<Int?>(null) }
+    var pendingRename by remember { mutableStateOf<Location?>(null) }
 
     Scaffold(
         topBar = { TopAppBar(title = { Text(stringResource(R.string.locations_title)) }) },
@@ -64,7 +65,7 @@ fun LocationsScreen(
             ) {
                 items(uiState.locations, key = { it.id }) { location ->
                     val itemCount = uiState.itemCounts[location.id] ?: 0
-                    Card(modifier = Modifier.fillMaxWidth()) {
+                    Card(modifier = Modifier.fillMaxWidth(), onClick = { pendingRename = location }) {
                         Row(
                             modifier = Modifier.fillMaxWidth().padding(16.dp),
                             horizontalArrangement = Arrangement.SpaceBetween,
@@ -138,6 +139,31 @@ fun LocationsScreen(
             text = { Text(stringResource(R.string.locations_delete_blocked, count)) },
             confirmButton = {
                 TextButton(onClick = { blockedDeleteCount = null }) { Text(stringResource(R.string.action_cancel)) }
+            },
+        )
+    }
+
+    pendingRename?.let { location ->
+        var name by remember(location.id) { mutableStateOf(location.name) }
+        AlertDialog(
+            onDismissRequest = { pendingRename = null },
+            title = { Text(stringResource(R.string.locations_rename)) },
+            text = {
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text(stringResource(R.string.locations_name_hint)) },
+                    singleLine = true,
+                )
+            },
+            confirmButton = {
+                TextButton(onClick = {
+                    viewModel.renameLocation(location.id, name)
+                    pendingRename = null
+                }) { Text(stringResource(R.string.action_save)) }
+            },
+            dismissButton = {
+                TextButton(onClick = { pendingRename = null }) { Text(stringResource(R.string.action_cancel)) }
             },
         )
     }

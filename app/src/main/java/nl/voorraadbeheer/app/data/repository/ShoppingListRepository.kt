@@ -1,7 +1,6 @@
 package nl.voorraadbeheer.app.data.repository
 
 import com.google.firebase.Timestamp
-import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
@@ -14,13 +13,10 @@ import javax.inject.Singleton
 @Singleton
 class ShoppingListRepository @Inject constructor(
     private val firestore: FirebaseFirestore,
-    private val auth: FirebaseAuth,
+    private val householdRepository: HouseholdRepository,
 ) {
-    private fun listCollection() =
-        firestore.collection("users").document(requireUid()).collection("shoppingList")
-
-    private fun requireUid(): String =
-        auth.currentUser?.uid ?: error("Gebruiker is niet ingelogd")
+    private suspend fun listCollection() =
+        firestore.collection("households").document(householdRepository.getHouseholdId()).collection("shoppingList")
 
     fun observeManualItems(): Flow<List<ShoppingListItem>> = callbackFlow {
         val registration = listCollection()

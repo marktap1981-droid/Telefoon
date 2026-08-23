@@ -56,18 +56,24 @@ fun DashboardScreen(
                         modifier = Modifier.weight(1f),
                         label = stringResource(R.string.dashboard_total_products),
                         value = uiState.totalProducts.toString(),
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.primary,
                     )
+                    val lowStockHighlight = uiState.lowStockCount > 0
                     StatCard(
                         modifier = Modifier.weight(1f),
                         label = stringResource(R.string.dashboard_low_stock),
                         value = uiState.lowStockCount.toString(),
-                        highlight = uiState.lowStockCount > 0,
+                        containerColor = if (lowStockHighlight) MaterialTheme.colorScheme.secondary else MaterialTheme.colorScheme.surface,
+                        contentColor = if (lowStockHighlight) MaterialTheme.colorScheme.onSecondary else MaterialTheme.colorScheme.onSurface,
                     )
+                    val expiringHighlight = uiState.expiringSoonCount > 0
                     StatCard(
                         modifier = Modifier.weight(1f),
                         label = stringResource(R.string.dashboard_expiring_soon),
                         value = uiState.expiringSoonCount.toString(),
-                        highlight = uiState.expiringSoonCount > 0,
+                        containerColor = if (expiringHighlight) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.surface,
+                        contentColor = if (expiringHighlight) MaterialTheme.colorScheme.onError else MaterialTheme.colorScheme.onSurface,
                     )
                 }
             }
@@ -107,18 +113,16 @@ private fun StatCard(
     modifier: Modifier = Modifier,
     label: String,
     value: String,
-    highlight: Boolean = false,
+    containerColor: androidx.compose.ui.graphics.Color,
+    contentColor: androidx.compose.ui.graphics.Color,
 ) {
     Card(
         modifier = modifier,
-        colors = if (highlight) {
-            CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.errorContainer)
-        } else {
-            CardDefaults.cardColors()
-        },
+        colors = CardDefaults.cardColors(containerColor = containerColor, contentColor = contentColor),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
     ) {
         Column(
-            modifier = Modifier.fillMaxWidth().padding(12.dp),
+            modifier = Modifier.fillMaxWidth().padding(14.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(value, style = MaterialTheme.typography.titleLarge)

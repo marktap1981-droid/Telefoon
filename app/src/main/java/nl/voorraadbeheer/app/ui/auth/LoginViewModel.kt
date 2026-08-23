@@ -10,6 +10,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import nl.voorraadbeheer.app.data.repository.AuthRepository
+import nl.voorraadbeheer.app.data.repository.HouseholdRepository
 import nl.voorraadbeheer.app.data.repository.LocationRepository
 import javax.inject.Inject
 
@@ -21,6 +22,7 @@ data class LoginUiState(
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
+    private val householdRepository: HouseholdRepository,
     private val locationRepository: LocationRepository,
 ) : ViewModel() {
 
@@ -35,6 +37,7 @@ class LoginViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching {
                 authRepository.signInWithGoogleIdToken(idToken)
+                householdRepository.ensureHousehold()
                 locationRepository.ensureDefaultLocationsExist()
             }.onSuccess {
                 _uiState.value = LoginUiState(isLoading = false)

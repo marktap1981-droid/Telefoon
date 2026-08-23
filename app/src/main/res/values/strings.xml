@@ -37,6 +37,7 @@
     <!-- Locaties -->
     <string name="locations_title">Locaties</string>
     <string name="locations_add">Locatie toevoegen</string>
+    <string name="locations_rename">Naam wijzigen</string>
     <string name="locations_name_hint">Naam (bv. Kast, Koelkast, Camping)</string>
     <string name="locations_empty">Nog geen locaties toegevoegd.</string>
     <string name="locations_delete_confirm">Locatie verwijderen?</string>
@@ -56,6 +57,8 @@
     <string name="product_name_hint">Productnaam</string>
     <string name="product_brand_hint">Merk</string>
     <string name="product_category_hint">Categorie</string>
+    <string name="product_add_photo">Foto kiezen</string>
+    <string name="product_change_photo">Andere foto kiezen</string>
     <string name="product_location_label">Locatie</string>
     <string name="product_quantity_label">Aantal</string>
     <string name="product_min_quantity_label">Minimum voorraad (voor melding)</string>
@@ -77,6 +80,14 @@
     <string name="settings_notifications_enabled">Meldingen aan</string>
     <string name="settings_sign_out">Uitloggen</string>
     <string name="settings_account">Ingelogd als %1$s</string>
+    <string name="settings_household_title">Huishouden delen</string>
+    <string name="settings_household_explanation">Deel deze code met bijvoorbeeld je partner, zodat jullie dezelfde voorraad zien.</string>
+    <string name="settings_household_share">Code delen</string>
+    <string name="settings_household_join_title">Lid worden van een huishouden</string>
+    <string name="settings_household_join_hint">Code invoeren</string>
+    <string name="settings_household_join_button">Aansluiten</string>
+    <string name="settings_household_join_success">Gelukt! Herstart de app om de gedeelde voorraad te zien.</string>
+    <string name="settings_household_join_failed">Code niet gevonden. Controleer de code en probeer opnieuw.</string>
 
     <!-- Algemeen -->
     <string name="action_cancel">Annuleren</string>

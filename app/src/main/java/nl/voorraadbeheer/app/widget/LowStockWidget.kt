@@ -49,9 +49,12 @@ class LowStockWidget : GlanceAppWidget() {
 
     private suspend fun fetchCounts(): Pair<Int, Int> {
         val uid = FirebaseAuth.getInstance().currentUser?.uid ?: return 0 to 0
+        val firestore = FirebaseFirestore.getInstance()
+        val householdId = runCatching {
+            firestore.collection("users").document(uid).get().await().getString("householdId")
+        }.getOrNull() ?: return 0 to 0
         val snapshot = runCatching {
-            FirebaseFirestore.getInstance()
-                .collection("users").document(uid).collection("inventoryItems")
+            firestore.collection("households").document(householdId).collection("inventoryItems")
                 .get().await()
         }.getOrNull() ?: return 0 to 0
 

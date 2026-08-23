@@ -39,6 +39,11 @@ class LocationsViewModel @Inject constructor(
         viewModelScope.launch { locationRepository.addLocation(name.trim()) }
     }
 
+    fun renameLocation(locationId: String, newName: String) {
+        if (newName.isBlank()) return
+        viewModelScope.launch { locationRepository.renameLocation(locationId, newName.trim()) }
+    }
+
     /** Verwijdert de locatie alleen als er geen voorraad meer aan hangt. */
     fun deleteLocation(locationId: String) {
         if ((uiState.value.itemCounts[locationId] ?: 0) > 0) return

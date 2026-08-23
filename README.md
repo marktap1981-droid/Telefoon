@@ -12,6 +12,7 @@ Android-app om je voorraad te beheren over meerdere locaties (bv. kast, koelkast
 - **Handmatig product toevoegen** (voor producten zonder barcode)
 - **Homescreen widget** met aantal lage-voorraad / bijna-verlopen items
 - **Cloud-sync via Firebase** (Firestore + Google Sign-In), werkt ook offline dankzij Firestore's lokale cache
+- **Samen voorraad bijhouden** met huisgenoten via een deelcode (bv. jij en je partner zien dezelfde voorraad)
 
 ## Techniek
 
@@ -46,11 +47,21 @@ In de Firebase Console: **Authentication → Sign-in method → Google** inschak
 
 In de Firebase Console: **Firestore Database → Database aanmaken** (kies "production mode" en een regio in de buurt, bv. `europe-west`).
 
-Kopieer daarna de inhoud van [`firestore.rules`](firestore.rules) in dit project naar **Firestore Database → Rules** in de Firebase Console en publiceer de regels. Deze regels zorgen dat gebruikers alleen bij hun eigen voorraad kunnen.
+Kopieer daarna de inhoud van [`firestore.rules`](firestore.rules) in dit project naar **Firestore Database → Rules** in de Firebase Console en publiceer de regels. Deze regels zorgen dat alleen leden van hetzelfde huishouden bij die voorraad kunnen.
 
-### 5. Bouwen en installeren
+### 5. Storage inschakelen (voor foto's bij handmatig toegevoegde producten)
+
+In de Firebase Console: **Storage → Aan de slag** (kies dezelfde regio als je Firestore-database).
+
+Kopieer daarna de inhoud van [`storage.rules`](storage.rules) naar **Storage → Rules** en publiceer.
+
+### 6. Bouwen en installeren
 
 In Android Studio: **Run ▶** met je telefoon aangesloten (USB-debugging aan) of een emulator. Dit bouwt een debug-APK en installeert 'm direct — geen Play Store nodig.
+
+## Samen met huisgenoten
+
+Bij de eerste keer inloggen krijg je automatisch je eigen "huishouden". Ga naar **Instellingen** om de deelcode te zien en te delen (bv. met je partner). Als iemand anders diezelfde code invoert bij **Instellingen → Lid worden van een huishouden**, zien jullie vanaf dat moment dezelfde voorraad, locaties en boodschappenlijst. Na het aansluiten bij een huishouden moet de app opnieuw opgestart worden zodat de gedeelde data geladen wordt.
 
 ## Belangrijke beperking van deze sessie
 
@@ -69,7 +80,6 @@ app/src/main/java/nl/voorraadbeheer/app/
 
 ## Ideeën voor later
 
-- Voorraad delen met gezinsleden (meerdere accounts op dezelfde huishouden-data)
 - Verbruiksstatistieken (per week/maand, meest gebruikte producten)
 - Receptensuggesties op basis van wat in voorraad is
 - Export naar CSV/Excel
