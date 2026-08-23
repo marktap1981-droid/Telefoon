@@ -31,6 +31,15 @@ class InventoryRepository @Inject constructor(
         awaitClose { registration.remove() }
     }
 
+    /** Live-status van één voorraaditem, voor het detailscherm. Null zodra het item niet (meer) bestaat. */
+    fun observeItem(itemId: String): Flow<InventoryItem?> = callbackFlow {
+        val registration = itemsCollection().document(itemId)
+            .addSnapshotListener { snapshot, _ ->
+                trySend(if (snapshot != null && snapshot.exists()) snapshot.toObject(InventoryItem::class.java) else null)
+            }
+        awaitClose { registration.remove() }
+    }
+
     suspend fun addItem(item: InventoryItem) {
         val withTimestamp = item.copy(addedAt = Timestamp.now())
         itemsCollection().add(withTimestamp).await()

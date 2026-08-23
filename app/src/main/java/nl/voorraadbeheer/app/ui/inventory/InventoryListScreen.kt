@@ -44,6 +44,7 @@ import nl.voorraadbeheer.app.util.toDisplayString
 fun InventoryListScreen(
     onScanClick: () -> Unit,
     onAddManuallyClick: () -> Unit,
+    onItemClick: (String) -> Unit,
     viewModel: InventoryViewModel = hiltViewModel(),
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -99,6 +100,7 @@ fun InventoryListScreen(
                 items(filtered, key = { it.id }) { item ->
                     InventoryRow(
                         item = item,
+                        onClick = { onItemClick(item.id) },
                         onIncrement = { viewModel.changeQuantity(item, 1) },
                         onDecrement = { viewModel.changeQuantity(item, -1) },
                         onDelete = { viewModel.deleteItem(item.id) },
@@ -127,11 +129,12 @@ fun InventoryListScreen(
 @Composable
 private fun InventoryRow(
     item: InventoryItem,
+    onClick: () -> Unit,
     onIncrement: () -> Unit,
     onDecrement: () -> Unit,
     onDelete: () -> Unit,
 ) {
-    Card(modifier = Modifier.fillMaxWidth()) {
+    Card(modifier = Modifier.fillMaxWidth(), onClick = onClick) {
         Row(
             modifier = Modifier.fillMaxWidth().padding(12.dp),
             verticalAlignment = androidx.compose.ui.Alignment.CenterVertically,

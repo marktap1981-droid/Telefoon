@@ -31,6 +31,7 @@ import nl.voorraadbeheer.app.ui.auth.AuthViewModel
 import nl.voorraadbeheer.app.ui.auth.LoginScreen
 import nl.voorraadbeheer.app.ui.dashboard.DashboardScreen
 import nl.voorraadbeheer.app.ui.inventory.InventoryListScreen
+import nl.voorraadbeheer.app.ui.inventory.ItemDetailScreen
 import nl.voorraadbeheer.app.ui.locations.LocationsScreen
 import nl.voorraadbeheer.app.ui.scan.ScanScreen
 import nl.voorraadbeheer.app.ui.settings.SettingsScreen
@@ -78,9 +79,8 @@ private fun MainScaffold() {
                         selected = selected,
                         onClick = {
                             navController.navigate(tab.navigateRoute) {
-                                popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                popUpTo(navController.graph.findStartDestination().id) { inclusive = false }
                                 launchSingleTop = true
-                                restoreState = true
                             }
                         },
                         icon = { Icon(tab.icon, contentDescription = stringResource(tab.labelRes)) },
@@ -109,7 +109,14 @@ private fun MainScaffold() {
                 InventoryListScreen(
                     onScanClick = { navController.navigate(Routes.SCAN) },
                     onAddManuallyClick = { navController.navigate(Routes.addProduct(null)) },
+                    onItemClick = { itemId -> navController.navigate(Routes.itemDetail(itemId)) },
                 )
+            }
+            composable(
+                route = Routes.ITEM_DETAIL_ROUTE,
+                arguments = listOf(navArgument(Routes.ITEM_DETAIL_ARG_ID) {}),
+            ) {
+                ItemDetailScreen(onBack = { navController.popBackStack() })
             }
             composable(Routes.SHOPPING_LIST) { ShoppingListScreen() }
             composable(Routes.LOCATIONS) { LocationsScreen() }
