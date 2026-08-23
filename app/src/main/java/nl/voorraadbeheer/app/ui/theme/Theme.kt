@@ -17,40 +17,48 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 
 // "Fresh Grocery" — felle, speelse kleuren met veel afgeronde vormen.
-private val FreshGreen = Color(0xFF1FAE5C)
-private val FreshGreenDark = Color(0xFF0B3D22)
-private val FreshGreenContainer = Color(0xFFD9F5E3)
-private val FreshAmber = Color(0xFFF5A524)
-private val FreshAmberContainer = Color(0xFFFCEBCF)
-private val FreshRed = Color(0xFFE5484D)
-private val FreshRedContainer = Color(0xFFFBDCDD)
-
 private val LightColors = lightColorScheme(
-    primary = FreshGreen,
+    primary = Color(0xFF1FAE5C),
     onPrimary = Color.White,
-    primaryContainer = FreshGreenContainer,
-    onPrimaryContainer = FreshGreenDark,
-    secondary = FreshAmber,
+    primaryContainer = Color(0xFFD9F5E3),
+    onPrimaryContainer = Color(0xFF0B3D22),
+    secondary = Color(0xFFF5A524),
     onSecondary = Color.White,
-    secondaryContainer = FreshAmberContainer,
+    secondaryContainer = Color(0xFFFCEBCF),
     onSecondaryContainer = Color(0xFF6B4400),
-    error = FreshRed,
+    error = Color(0xFFE5484D),
     onError = Color.White,
-    errorContainer = FreshRedContainer,
+    errorContainer = Color(0xFFFBDCDD),
     onErrorContainer = Color(0xFF6B1113),
     background = Color(0xFFFAFAF8),
+    onBackground = Color(0xFF1B1C1A),
     surface = Color.White,
+    onSurface = Color(0xFF1B1C1A),
+    surfaceVariant = Color(0xFFEDF0EB),
+    onSurfaceVariant = Color(0xFF444844),
+    outline = Color(0xFFCDD1CB),
 )
 
 private val DarkColors = darkColorScheme(
-    primary = Color(0xFF6FD79A),
-    onPrimary = FreshGreenDark,
-    primaryContainer = Color(0xFF115C33),
-    onPrimaryContainer = FreshGreenContainer,
-    secondary = FreshAmber,
-    onSecondary = Color(0xFF3D2800),
-    error = Color(0xFFF2A0A2),
-    onError = Color(0xFF5C0D0F),
+    primary = Color(0xFF34C77A),
+    onPrimary = Color(0xFF06281A),
+    primaryContainer = Color(0xFF16482C),
+    onPrimaryContainer = Color(0xFFB6F0CE),
+    secondary = Color(0xFFF5A524),
+    onSecondary = Color(0xFF2B1900),
+    secondaryContainer = Color(0xFF493100),
+    onSecondaryContainer = Color(0xFFFDE3B8),
+    error = Color(0xFFFF6B6E),
+    onError = Color(0xFF410004),
+    errorContainer = Color(0xFF641416),
+    onErrorContainer = Color(0xFFFFD9D9),
+    background = Color(0xFF14171A),
+    onBackground = Color(0xFFF1F3F1),
+    surface = Color(0xFF1E2226),
+    onSurface = Color(0xFFF1F3F1),
+    surfaceVariant = Color(0xFF2A2F32),
+    onSurfaceVariant = Color(0xFFC2C7C2),
+    outline = Color(0xFF3C4145),
 )
 
 private val AppShapes = Shapes(
