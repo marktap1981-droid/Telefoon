@@ -56,6 +56,12 @@ class InventoryRepository @Inject constructor(
             .await()
     }
 
+    suspend fun updateMinQuantity(itemId: String, newMinQuantity: Int) {
+        itemsCollection().document(itemId)
+            .update("minQuantity", newMinQuantity.coerceAtLeast(0))
+            .await()
+    }
+
     suspend fun deleteItem(itemId: String) {
         itemsCollection().document(itemId).delete().await()
     }

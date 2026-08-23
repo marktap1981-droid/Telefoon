@@ -49,6 +49,13 @@ class ItemDetailViewModel @Inject constructor(
         }
     }
 
+    fun changeMinQuantity(delta: Int) {
+        val item = uiState.value.item ?: return
+        viewModelScope.launch {
+            inventoryRepository.updateMinQuantity(item.id, item.minQuantity + delta)
+        }
+    }
+
     fun deleteItem() {
         val item = uiState.value.item ?: return
         viewModelScope.launch {

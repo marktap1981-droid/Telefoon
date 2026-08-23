@@ -123,7 +123,22 @@ fun ItemDetailScreen(
                     }
                 }
 
-                DetailRow(stringResource(R.string.product_min_quantity_label), "${item.minQuantity}")
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    Text(stringResource(R.string.product_min_quantity_label), style = MaterialTheme.typography.bodyLarge)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        IconButton(onClick = { viewModel.changeMinQuantity(-1) }) {
+                            Icon(Icons.Filled.Remove, contentDescription = null)
+                        }
+                        Text("${item.minQuantity}", style = MaterialTheme.typography.titleLarge)
+                        IconButton(onClick = { viewModel.changeMinQuantity(1) }) {
+                            Icon(Icons.Filled.Add, contentDescription = null)
+                        }
+                    }
+                }
 
                 item.expiryDate?.let {
                     DetailRow(stringResource(R.string.product_expiry_label), it.toDisplayString())
